@@ -13,8 +13,8 @@ dtrn = WordsData(tr_train, batchsize=BATCHSIZE, maxlength=MAXLENGTH, bucketwidth
 ddev = WordsData(tr_dev, batchsize=BATCHSIZE, maxlength=MAXLENGTH, bucketwidth = 1)
 
 @info "Initializing CNN Model"
-embedding_size, filter_no = 64, 20
-println("embeding_size: ", embedding_size)
+embedding_size, filter_no = 128, 20
+println("embedding_size: ", embedding_size)
 println(filter_no, " Convolution filter for each region size (2, 3, 4)")
 
 model = DisModel(tr_charset, embedding_size, (
@@ -44,20 +44,16 @@ for (x, y) in dev
     push!(results, map( x-> x[1], argmax(model(x); dims=1))...)
     push!(real, y...)
 end
-
 Acc = sum(map( x -> x[1] == x[2], zip(real, results))) / length(real)
-TN, TP, FP = 0, 0, 0
-for (r, p) in zip(real, results)
-    TN += (!r && !p)
-    TP += (r && p)
-    FP += (!r && p)
-end
+TN = sum(map(x -> x[1] == x[2] == 1, zip(real, results)))
+TP = sum(map(x -> x[1] == x[2] == 2, zip(real, results)))
+FP = sum(map(x -> x[1] != x[2] == 2, zip(real, results)))
 P = TP / (TP + FP)
 R = TP / (TP + TN)
 F1 = 2 * P * R / ( P + R )
 
 @info "CNN Discriminator model performance report"
-@show @sprintf("Accuracy %.2f", Acc)
-@show @sprintf("Recall %.2f", R)
-@show @sprintf("Precision %.2f", P)
-@show @sprintf("F1-Score %.2f", F1)
+println(@sprintf("Accuracy %.2f", Acc))
+println(@sprintf("Recall %.2f", R))
+println(@sprintf("Precision %.2f", P))
+println(@sprintf("F1-Score %.2f", F1))
