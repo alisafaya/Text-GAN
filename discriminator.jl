@@ -114,7 +114,7 @@ Embed(charsetsize::Int, embedsize::Int) = Embed(param(embedsize, charsetsize))
 (l::Embed)(x) = (em=permutedims(l.w[:, x], [3, 1, 2]); ds=size(em); em=reshape(em, ds[1], ds[2], 1, ds[3])) # (E, B, T) -> (T, E, 1, B)
 
 struct Conv; w; b; f; p; end
-(c::Conv)(x) = (co=conv4(c.w, dropout(x,c.p)); c.f.(pool((co .+ c.b); window=(size(x, 1), size(x, 2)))))
+(c::Conv)(x) = (co=conv4(c.w, dropout(x,c.p)); c.f.(pool((co .+ c.b); window=(size(co, 1), size(co, 2)))))
 Conv(w1::Int,w2::Int,cx::Int,cy::Int,f=relu;pdrop=0) = Conv(param(w1,w2,cx,cy), param0(1,1,cy,1), f, pdrop)
 
 struct Dense; w; b; f; p; end
