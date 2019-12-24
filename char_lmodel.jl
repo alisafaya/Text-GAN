@@ -222,7 +222,7 @@ function generate(s::LModel; start="", maxlength=30)
     for i in starting_index:maxlength
         charembed = s.srcembed(chars[i:i])
         rnn_out = s.rnn(charembed)
-        output = model.projection(dropout(rnn_out, model.dropout))
+        output = s.projection(dropout(rnn_out, s.dropout))
         push!(chars, s.srccharset.c2i[ sample(s.srccharset.i2c, Weights(Array(softmax(reshape(output, length(s.srccharset.i2c)))))) ] )
         
         if chars[end] == s.srccharset.eow
