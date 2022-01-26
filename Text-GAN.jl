@@ -183,7 +183,7 @@ function (c::DisModel)(x) # the input here is weights of the characters with sha
     em = c.embed(x)
     rnn_out = c.rnn(em)
     dims = size(rnn_out)
-    rnn_out = reshape(rnn_out, :, dims[2] * dims[3] )
+    rnn_out = reshape(rnn_out, dims[1], dims[2] * dims[3] )
     for l in c.denselayers
         rnn_out = l(rnn_out)
     end
@@ -402,7 +402,7 @@ function dmodel(batches)
 end
 
 @info "Started training..."
-for k in 1:10
+for k in 1:5
     println("Turn no:", k)
     println("Ex.Generated words: \n", join([ generate(genmodel; maxlength=MAXLENGTH) for i in 1:5 ],"\n"))
     dmodel(50)
